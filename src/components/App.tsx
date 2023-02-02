@@ -7,6 +7,8 @@ import { Message, StorageKeys, UIState } from "../types";
 import sendMessage from "../utils/send-message";
 import getConfig from "../utils/get-config";
 import WaitingResponse from "./WaitingResponse";
+import { v4 as uuidv4 } from "uuid";
+
 import Init from "./Init";
 
 type State = {
@@ -67,9 +69,10 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 
 			const current: Message = {
 				text,
+				id: uuidv4(),
 				from: "user",
 				conversationId: prevMessage?.conversationId,
-				parentMessageId: prevMessage?.parentMessageId,
+				parentMessageId: prevMessage?.id,
 			};
 
 			const messages = [...state.messages, current] as Message[];
@@ -83,22 +86,21 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 				const res = await sendMessage(current);
 
 				if (res?.text) {
+					const answer: Message = {
+						from: "ai",
+						id: res.id,
+						text: res.text,
+						conversationId: res.conversationId,
+						parentMessageId: current.id,
+					};
+
 					return setState({
-						messages: [
-							...messages,
-							{
-								from: "ai",
-								text: res.text,
-								conversationId: res.conversationId,
-								parentMessageId: res.id,
-							},
-						],
+						messages: [...messages, answer],
 						uiState: UIState.READY,
 					});
 				}
 			} catch (err) {
 				console.log("[ERROR]", err);
-
 				if ((err as any)?.statusCode === 401) {
 					return setState({
 						uiState: UIState.ASK_API_KEY,

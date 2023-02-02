@@ -9,6 +9,7 @@ export enum UIState {
 export type Message = {
 	text: string;
 	from: "user" | "ai";
+	id: string;
 	conversationId?: string;
 	parentMessageId?: string;
 };
