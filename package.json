@@ -1,6 +1,6 @@
 {
 	"name": "openai-chatgpt",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"license": "MIT",
 	"bin": "dist/cli.js",
 	"engines": {
@@ -16,7 +16,7 @@
 		"dist"
 	],
 	"dependencies": {
-		"chatgpt": "^4.0.2",
+		"chatgpt": "^4.0.4",
 		"conf": "^11.0.1",
 		"ink": "^3.2.0",
 		"ink-big-text": "^1.2.0",
