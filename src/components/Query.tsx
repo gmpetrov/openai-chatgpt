@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
-import { Text, Box, Newline } from "ink";
+import { Text, Box } from "ink";
 import TextInput from "ink-text-input";
-import { Colors } from "../types";
 
 type Props = {
 	onSubmit?: (value: string) => any;
@@ -12,14 +11,14 @@ const Query: FC<Props> = ({ onSubmit }) => {
 
 	return (
 		<Box>
-			<Text color={Colors.USER}>
-				Enter your query:
-				<Newline />
-				<Newline />
+			<Box marginRight={1}>
+				<Text color="gray">[Enter your query]:</Text>
+			</Box>
+			<Box>
 				<Text color="white">
 					<TextInput value={query} onChange={setQuery} onSubmit={onSubmit} />
 				</Text>
-			</Text>
+			</Box>
 		</Box>
 	);
 };

@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from "react";
-import { Text, Box, Newline, Static } from "ink";
+import { Text, Box, Static } from "ink";
 import { Colors, Message } from "../types";
 import Gradient from "ink-gradient";
 import BigText from "ink-big-text";
@@ -18,27 +18,32 @@ const History: FC<Props> = ({ messages }) => {
 		<Box flexDirection="column">
 			<Static items={messagesWithHeader}>
 				{(msg, idx) => (
-					<Box key={idx}>
+					<Box key={idx} flexDirection="row" width="100%">
 						{idx === 0 ? (
 							<Gradient name="retro">
-								<BigText text="ChatGPT" />
+								<BigText text="ChatGPT" font="block" />
 							</Gradient>
 						) : (
-							<Text color={msg.from === "user" ? Colors.USER : Colors.AI}>
-								{msg.from === "user" ? (
-									"[me]"
-								) : (
-									<Gradient name={Colors.AI_GRADIENT}>{"[chatgpt]"}</Gradient>
-								)}
-
-								<Newline />
-								<Newline />
-
-								<Text color="white">{msg.text}</Text>
-
-								<Newline />
-								<Newline />
-							</Text>
+							<Box
+								borderColor="white"
+								borderStyle="round"
+								alignSelf="flex-end"
+								padding={1}
+								paddingRight={2}
+							>
+								<Box marginRight={1}>
+									<Text>{msg.from === "user" ? "👨" : "🤖"}</Text>
+								</Box>
+								<Box>
+									{msg.from === "user" ? (
+										<Text color="white">{msg.text}</Text>
+									) : (
+										<Gradient name={Colors.AI_GRADIENT}>
+											<Text color="white">{msg.text}</Text>
+										</Gradient>
+									)}
+								</Box>
+							</Box>
 						)}
 					</Box>
 				)}

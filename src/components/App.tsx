@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useReducer } from "react";
-import { Box } from "ink";
+import { Box, Newline } from "ink";
 import History from "./History";
 import AskApiKey from "./AskApiKey";
 import Query from "./Query";
@@ -140,7 +140,7 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 	return (
 		<Box flexDirection="column">
 			<History messages={state.messages} />
-
+			<Newline />
 			{render}
 		</Box>
 	);

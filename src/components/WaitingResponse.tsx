@@ -10,7 +10,7 @@ const WaitingResponse: FC = () => {
 					<Spinner type="dots" />
 				</Text>
 			</Box>
-			<Text color="greenBright">{"Waiting Response"}</Text>
+			<Text color="gray">{"Waiting Response"}</Text>
 		</Box>
 	);
 };
