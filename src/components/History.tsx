@@ -25,7 +25,7 @@ const History: FC<Props> = ({ messages }) => {
 							</Gradient>
 						) : (
 							<Box
-								borderColor="white"
+								borderColor="gray"
 								borderStyle="round"
 								alignSelf="flex-end"
 								padding={1}
