@@ -1,15 +1,16 @@
 import React, { FC, useCallback, useEffect, useMemo, useReducer } from "react";
 import { Box, Newline } from "ink";
 import History from "./History";
-import AskApiKey from "./AskApiKey";
+import AskInput from "./AskInput";
 import Query from "./Query";
-import { Message, StorageKeys, UIState } from "../types";
+import { ApiType, Message, StorageKeys, UIState } from "../types";
 import sendMessage from "../utils/send-message";
 import getConfig from "../utils/get-config";
 import WaitingResponse from "./WaitingResponse";
 import { v4 as uuidv4 } from "uuid";
 
 import Init from "./Init";
+import AskApiType from "./AskApiType";
 
 type State = {
 	uiState: UIState;
@@ -33,14 +34,15 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 			const config = await getConfig();
 
 			const openaiApiKey = config.get(StorageKeys.OPENAI_API_KEY);
+			const accessToken = config.get(StorageKeys.ACCESS_TOKEN_KEY);
 
-			if (!openaiApiKey || reset) {
-				if (openaiApiKey) {
-					config.delete(StorageKeys.OPENAI_API_KEY);
-				}
+			if ((!openaiApiKey && !accessToken) || reset) {
+				config.delete(StorageKeys.API_TYPE);
+				config.delete(StorageKeys.OPENAI_API_KEY);
+				config.delete(StorageKeys.ACCESS_TOKEN_KEY);
 
 				return setState({
-					uiState: UIState.ASK_API_KEY,
+					uiState: UIState.ASK_API_TYPE,
 				});
 			}
 
@@ -50,14 +52,32 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 		})();
 	}, []);
 
-	const onSubmitApiKey = useCallback(
-		async (apiKey: string) => {
+	const onSubmitToken = useCallback(
+		(storageKey: StorageKeys) => async (token: string) => {
 			const config = await getConfig();
 
-			config.set(StorageKeys.OPENAI_API_KEY, apiKey);
+			config.set(storageKey, token);
 
 			setState({
 				uiState: UIState.READY,
+			});
+		},
+		[setState]
+	);
+
+	const onSubmitApiType = useCallback(
+		async (type: ApiType) => {
+			const config = await getConfig();
+
+			config.set(StorageKeys.API_TYPE, type);
+
+			const nextState =
+				type === ApiType.OFFICIAL
+					? UIState.ASK_API_KEY
+					: UIState.ASK_ACCESS_TOKEN;
+
+			setState({
+				uiState: nextState,
 			});
 		},
 		[setState]
@@ -103,7 +123,7 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 				console.log("[ERROR]", err);
 				if ((err as any)?.statusCode === 401) {
 					return setState({
-						uiState: UIState.ASK_API_KEY,
+						uiState: UIState.ASK_API_TYPE,
 					});
 				}
 			}
@@ -122,7 +142,28 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 				render = <Init />;
 				break;
 			case UIState.ASK_API_KEY:
-				render = <AskApiKey onSubmit={onSubmitApiKey} />;
+				render = (
+					<AskInput
+						message="Enter your OpenAI API Key [https://platform.openai.com/account/api-keys]"
+						onSubmit={onSubmitToken(StorageKeys.OPENAI_API_KEY)}
+					/>
+				);
+				break;
+			case UIState.ASK_ACCESS_TOKEN:
+				render = (
+					<AskInput
+						message="Enter your Access Token [https://github.com/transitive-bullshit/chatgpt-api#access-token]"
+						onSubmit={onSubmitToken(StorageKeys.ACCESS_TOKEN_KEY)}
+					/>
+				);
+				break;
+			case UIState.ASK_API_TYPE:
+				render = (
+					<AskApiType
+						message="Api Type: (more info: [https://github.com/transitive-bullshit/chatgpt-api#usage])"
+						onSubmit={onSubmitApiType as any}
+					/>
+				);
 				break;
 			case UIState.READY:
 				render = <Query onSubmit={onSubmitQuery} />;
@@ -135,7 +176,7 @@ const App: FC<{ reset?: boolean }> = ({ reset = false }) => {
 		}
 
 		return render;
-	}, [state.uiState, onSubmitQuery, onSubmitApiKey]);
+	}, [state.uiState, onSubmitQuery, onSubmitToken]);
 
 	return (
 		<Box flexDirection="column">

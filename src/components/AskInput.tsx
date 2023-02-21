@@ -3,20 +3,16 @@ import { Text, Box } from "ink";
 import TextInput from "ink-text-input";
 
 type Props = {
+	message: string;
 	onSubmit?: (value: string) => any;
 };
 
-const AskToken: FC<Props> = ({ onSubmit }) => {
+const AskInput: FC<Props> = ({ onSubmit, message }) => {
 	const [query, setQuery] = useState("");
 
 	return (
 		<Box>
-			<Text color={"yellow"}>
-				{
-					"Enter your OpenAI API Key [https://platform.openai.com/account/api-keys]"
-				}
-				:
-			</Text>
+			<Text color={"yellow"}>{message}:</Text>
 
 			<Box paddingLeft={1}>
 				<Text color="white">
@@ -32,4 +28,4 @@ const AskToken: FC<Props> = ({ onSubmit }) => {
 	);
 };
 
-export default AskToken;
+export default AskInput;
