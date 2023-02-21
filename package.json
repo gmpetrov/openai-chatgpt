@@ -16,7 +16,7 @@
 		"dist"
 	],
 	"dependencies": {
-		"chatgpt": "^4.1.1",
+		"chatgpt": "^4.7.2",
 		"conf": "^11.0.1",
 		"ink": "^3.2.0",
 		"ink-big-text": "^1.2.0",
